@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../css/dataTable/jquery.dataTables.css">
+</head>
+<style>
+    .width{
+        width:200px;
+    }
+    .dataTable-tr-color{
+        text-align:center;
+        color:#003366;
+        background:#e8e8e8;
+        padding:1px;
+        height:25px;
+    }
+</style>
+<body>
+<h1>Menu</h1>
+<span>DataTable</span><br>
+<table id="dataTable" border="1"></table>
+
+<script src="../js/jquery/jquery.js"></script>
+<script src="../js/dataTable/jquery.dataTables.js"></script>
+<script>
+    $(function () {
+        $("#dataTable").dataTable({
+            ajax: {
+                url: "../../actionController/getInfo",
+                type: "post",
+                async: false,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: function (data) {
+                    data = {};
+                    data.page = 1;
+                    return JSON.stringify(data);
+                },
+                dataSrc: function (json) {
+                    console.log(json);
+                    return json.info;
+                }
+            },
+            columns: [
+                {
+                    sortable: false,
+                    className:"text-center",
+                    title: '<input type="checkbox" name="allCheck"/>',
+                    render: function (data, type, row, meta) {
+                        var str = ""
+                        str += '<input type="checkbox" name="checkbox"/>';
+                        return str;
+                    }
+                },
+                {
+                    data: null,
+                    title: "ID",
+                    className:"text-center",
+                    render: function (data, type, row, meta) {
+                        return data.id;
+                    }
+                },
+                {
+                    data: null,
+                    title: "姓名",
+                    className:"text-center",
+                    render: function (data, type, row, meta) {
+                        return data.name;
+                    }
+                },
+                {
+                    data: null,
+                    title: "年龄",
+                    className:"text-center",
+                    render: function (data, type, row, meta) {
+                        return data.age;
+                    }
+                },
+                {
+                    title: "操作",
+                    defaultValue:"",
+                    className:"text-center width",
+                    render: function (data, type, row, meta) {
+                        var str = "";
+                            str+='<button type="button" name="examine">查看</button>&nbsp;&nbsp;&nbsp;';
+                            str+='<button type="button" name="edit">编辑</button>&nbsp;&nbsp;&nbsp;';
+                            str+='<button type="button" name="delete">删除</button>&nbsp;&nbsp;&nbsp;';
+                        return str;
+                    }
+                }
+            ]
+        });
+
+        $("#dataTable tbody").on('click','tr',function(event){
+
+            //获取dataTable对象
+            var table = $("#dataTable").DataTable();
+
+            //改变当前行的背景色
+            //table.row(this).nodes().to$().addClass( 'dataTable-tr-color' );
+
+            //获取当前行的显示数据
+            var data = table.row(this).data();
+
+            //改变当前行，第一列的复选框状态
+            //$(this).children("td:first").children("input[type=checkbox]").attr("checked",true);
+            //$(checkbox).prop("checked")?$(checkbox).prop("checked",false):$(checkbox).prop("checked",true);
+
+            var checkbox = $(this).children("td:first").children("input[type=checkbox]");
+            if($(checkbox).prop("checked")){
+                $(checkbox).prop("checked",false);
+                table.row(this).nodes().to$().removeClass( 'dataTable-tr-color' );
+            }else{
+                $(checkbox).prop("checked",true);
+                table.row(this).nodes().to$().addClass( 'dataTable-tr-color' );
+            }
+        });
+        $.each($("#dataTable tbody tr"),function(i,d){
+            console.log($(d).children("td:last").children("button:eq(0)"));
+            $(d).children("td:last").children("button[name=examine]").click(function(){
+                alert("查看");
+            })
+        });
+
+
+
+
+    });
+</script>
+</body>
+</html>
